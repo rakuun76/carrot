@@ -24,7 +24,7 @@ export default function CreateAccount() {
           required
           errors={[]}
         />
-        <FormBtn disabled={false} text="Create account" />
+        <FormBtn text="Create account" />
       </form>
       <SocialLogin />
     </div>

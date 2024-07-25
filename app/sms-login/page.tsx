@@ -21,7 +21,7 @@ export default function SmsLogin() {
           required
           errors={[]}
         />
-        <FormBtn disabled={false} text="Verify" />
+        <FormBtn text="Verify" />
       </form>
     </div>
   );
