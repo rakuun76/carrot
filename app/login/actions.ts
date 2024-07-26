@@ -1,7 +1,6 @@
 "use server";
 
-export async function handleFormSubmit(prevState: any, formData: FormData) {
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+export async function login(prevState: any, formData: FormData) {
   return {
     errors: ["wrong password", "too long"],
   };

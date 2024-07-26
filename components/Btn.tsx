@@ -2,11 +2,11 @@
 
 import { useFormStatus } from "react-dom";
 
-interface IFormBtn {
+interface IBtn {
   text: string;
 }
 
-export default function FormBtn({ text }: IFormBtn) {
+export default function Btn({ text }: IBtn) {
   const { pending } = useFormStatus();
 
   return (
