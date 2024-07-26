@@ -1,16 +1,16 @@
 "use server";
 
+import {
+  EMAIL_ERROR,
+  PASSWORD_CONFIRM_ERROR,
+  PASSWORD_MIN_ERROR,
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REGEX,
+  PASSWORD_REGEX_ERROR,
+  STRING_ERROR,
+} from "@/lib/constants";
 import { z } from "zod";
 
-const stringErrorMessage = {
-  invalid_type_error: "It should be string.",
-  required_error: "You must enter it.",
-};
-const minErrorMessage = (length: number) =>
-  `It should be at least ${length} characters.`;
-const maxErrorMessage = (length: number) =>
-  `It should be no more than ${length} characters.`;
-const emailErrorMessage = "Invalid email format. Please check your input.";
 const checkPassword = ({
   password,
   confirmPassword,
@@ -18,27 +18,21 @@ const checkPassword = ({
   password: string;
   confirmPassword: string;
 }) => password === confirmPassword;
-const checkPasswordErrorMessage = "The password confirmation does not match.";
-const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*\d).+$/;
-const passwordRegexErrorMessage =
-  "Password must contain at least one letter, one special character(!@#$%^*+=-), and one digit.";
 
 const formSchema = z
   .object({
-    username: z
-      .string(stringErrorMessage)
-      .min(3, minErrorMessage(3))
-      .max(10, maxErrorMessage(10))
-      .trim(),
-    email: z.string(stringErrorMessage).email(emailErrorMessage),
+    username: z.string(STRING_ERROR).trim(),
+    email: z.string(STRING_ERROR).email(EMAIL_ERROR),
     password: z
-      .string(stringErrorMessage)
-      .min(8, minErrorMessage(8))
-      .regex(passwordRegex, passwordRegexErrorMessage),
-    confirmPassword: z.string(stringErrorMessage).min(8, minErrorMessage(8)),
+      .string(STRING_ERROR)
+      .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR)
+      .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR),
+    confirmPassword: z
+      .string(STRING_ERROR)
+      .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR),
   })
   .refine(checkPassword, {
-    message: checkPasswordErrorMessage,
+    message: PASSWORD_CONFIRM_ERROR,
     path: ["confirmPassword"],
   });
 

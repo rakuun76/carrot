@@ -5,6 +5,7 @@ import { login } from "./actions";
 import Btn from "@/components/Btn";
 import Input from "@/components/Input";
 import SocialLogin from "@/components/SocialLogin";
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 
 export default function Login() {
   const [state, action] = useFormState(login, null);
@@ -16,12 +17,20 @@ export default function Login() {
         <h2 className="text-xl">Log in with email and password.</h2>
       </div>
       <form className="flex flex-col gap-3" action={action}>
-        <Input name="email" type="email" placeholder="Email" required />
+        <Input
+          name="email"
+          type="email"
+          placeholder="Email"
+          required
+          errors={state?.fieldErrors.email}
+        />
         <Input
           name="password"
           type="password"
           placeholder="Password"
           required
+          minLength={PASSWORD_MIN_LENGTH}
+          errors={state?.fieldErrors.password}
         />
         <Btn text="Log in" />
       </form>
