@@ -14,9 +14,8 @@ import {
 import { z } from "zod";
 import db from "@/lib/db";
 import bcrypt from "bcrypt";
-import { getIronSession } from "iron-session";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import getSession from "@/lib/session";
 
 const checkPassword = ({
   password,
@@ -26,7 +25,7 @@ const checkPassword = ({
   confirmPassword: string;
 }) => password === confirmPassword;
 
-const checkUniqueUsername = async (username: string) => {
+const isUniqueUsername = async (username: string) => {
   const user = await db.user.findUnique({
     where: { username },
     select: { id: true },
@@ -35,7 +34,7 @@ const checkUniqueUsername = async (username: string) => {
   return user === null;
 };
 
-const checkUniqueEmail = async (email: string) => {
+const isUniqueEmail = async (email: string) => {
   const user = await db.user.findUnique({
     where: { email },
     select: { id: true },
@@ -49,18 +48,28 @@ const formSchema = z
     username: z
       .string(STRING_ERROR)
       .trim()
-      .refine(checkUniqueUsername, USERNAME_EXISTS_ERROR),
+      .refine(isUniqueUsername, USERNAME_EXISTS_ERROR),
     email: z
       .string(STRING_ERROR)
       .email(EMAIL_ERROR)
-      .refine(checkUniqueEmail, EMAIL_EXISTS_ERROR),
+      .refine(isUniqueEmail, EMAIL_EXISTS_ERROR),
     password: z
       .string(STRING_ERROR)
-      .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR)
-      .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR),
+      .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR),
     confirmPassword: z
       .string(STRING_ERROR)
       .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR),
+  })
+  .superRefine(({ password }, ctx) => {
+    if (!PASSWORD_REGEX.test(password)) {
+      ctx.addIssue({
+        code: "custom",
+        message: PASSWORD_REGEX_ERROR,
+        path: ["password"],
+        fatal: true,
+      });
+      return z.NEVER;
+    }
   })
   .refine(checkPassword, {
     message: PASSWORD_CONFIRM_ERROR,
@@ -75,7 +84,7 @@ export async function createAccount(prevState: any, formData: FormData) {
     confirmPassword: formData.get("confirmPassword"),
   };
 
-  const result = await formSchema.safeParseAsync(data);
+  const result = await formSchema.spa(data);
 
   if (!result.success) {
     return result.error.flatten();
@@ -93,13 +102,9 @@ export async function createAccount(prevState: any, formData: FormData) {
       },
     });
 
-    const cookie = await getIronSession(cookies(), {
-      cookieName: "user",
-      password: process.env.COOKIE_PASSWORD!,
-    });
-    //@ts-ignore
-    cookie.id = user.id;
-    await cookie.save();
+    const session = await getSession();
+    session.id = user.id;
+    await session.save();
 
     redirect("/");
   }

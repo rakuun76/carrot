@@ -24,3 +24,5 @@ export const USERNAME_EXISTS_ERROR = "This username is already taken";
 
 export const EMAIL_EXISTS_ERROR =
   "There is an account already registered with that email.";
+
+export const EMAIL_LOGIN_ERROR = "An account with this email does not exist.";
