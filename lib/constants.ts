@@ -19,3 +19,8 @@ export const PASSWORD_CONFIRM_ERROR =
 
 export const PHONE_NUMBER_ERROR =
   "Wrong phone number format. It should be ko-KR format.";
+
+export const USERNAME_EXISTS_ERROR = "This username is already taken";
+
+export const EMAIL_EXISTS_ERROR =
+  "There is an account already registered with that email.";
