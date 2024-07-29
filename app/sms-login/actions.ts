@@ -1,29 +1,46 @@
 "use server";
 
-import {
-  EMAIL_ERROR,
-  PASSWORD_MIN_ERROR,
-  PASSWORD_MIN_LENGTH,
-  PASSWORD_REGEX,
-  PASSWORD_REGEX_ERROR,
-  STRING_ERROR,
-} from "@/lib/constants";
+import { PHONE_NUMBER_ERROR, STRING_ERROR } from "@/lib/constants";
+import { redirect } from "next/navigation";
+import validator from "validator";
 import { z } from "zod";
 
-const formSchema = z.object({
-  email: z.string(STRING_ERROR).email(EMAIL_ERROR),
-  password: z
-    .string(STRING_ERROR)
-    .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR)
-    .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR),
-});
+interface IPrevState {
+  phoneNumber: boolean;
+}
 
-export async function smsLogin(prevState: any, formData: FormData) {
-  const data = {
-    email: formData.get("email"),
-    password: formData.get("password"),
-  };
+const phoneNumberSchema = z
+  .string(STRING_ERROR)
+  .refine(
+    (phoneNumber) => validator.isMobilePhone(phoneNumber, "ko-KR"),
+    PHONE_NUMBER_ERROR
+  );
+const verificationCodeSchema = z.string(STRING_ERROR);
 
-  const result = formSchema.safeParse(data);
-  if (!result.success) return result.error.flatten();
+export async function smsLogin(prevState: IPrevState, formData: FormData) {
+  if (!prevState.phoneNumber) {
+    const phoneNumber = formData.get("phoneNumber");
+    const result = phoneNumberSchema.safeParse(phoneNumber);
+
+    if (!result.success) {
+      return {
+        phoneNumber: false,
+        error: result.error.flatten(),
+      };
+    } else {
+      return { phoneNumber: true };
+    }
+  } else {
+    const verificationCode = formData.get("verificationCode");
+    const result = verificationCodeSchema.safeParse(verificationCode);
+
+    if (!result.success) {
+      return {
+        phoneNumber: true,
+        error: result.error.flatten(),
+      };
+    } else {
+      redirect("/");
+    }
+  }
 }

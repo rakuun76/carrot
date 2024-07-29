@@ -16,3 +16,6 @@ export const PASSWORD_REGEX_ERROR =
 
 export const PASSWORD_CONFIRM_ERROR =
   "The password confirmation does not match.";
+
+export const PHONE_NUMBER_ERROR =
+  "Wrong phone number format. It should be ko-KR format.";
