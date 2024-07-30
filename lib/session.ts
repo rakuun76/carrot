@@ -2,7 +2,7 @@ import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 
 interface ISession {
-  id?: Number;
+  id?: number;
 }
 
 export default function getSession() {
