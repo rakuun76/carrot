@@ -12,7 +12,7 @@ import {
 import { z } from "zod";
 import db from "@/lib/db";
 import bcrypt from "bcrypt";
-import getSession from "@/lib/session";
+import { sessionLogin } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 const isRegisteredEmail = async (email: string) => {
@@ -61,9 +61,7 @@ export async function login(prevState: any, formData: FormData) {
       user!.password ?? ""
     );
     if (passwordPass) {
-      const session = await getSession();
-      session.id = user!.id;
-      await session.save();
+      await sessionLogin(user!.id);
       redirect("/profile");
     } else {
       return {
