@@ -39,3 +39,11 @@ export const TOKEN_MAX = 999999;
 export const TOKEN_RANGE_ERROR = `Must be between ${TOKEN_MIN} and ${TOKEN_MAX}.`;
 
 export const TOKEN_EXISTS_ERROR = "This token does not exist.";
+
+export const DAY_IN_MS = 1000 * 60 * 60 * 24;
+
+export const WEEK_IN_MS = 1000 * 60 * 60 * 24 * 7;
+
+export const MONTH_IN_MS = 1000 * 60 * 60 * 24 * 30;
+
+export const YEAR_IN_MS = 1000 * 60 * 60 * 24 * 365;
