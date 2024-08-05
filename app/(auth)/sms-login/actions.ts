@@ -117,7 +117,7 @@ export async function smsLogin(prevState: IPrevState, formData: FormData) {
       return { token: true };
     }
   } else {
-    const token = formData.get("token");
+    const token = Number(formData.get("token"));
     const result = await tokenSchema.spa(token);
 
     if (!result.success) {

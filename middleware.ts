@@ -8,7 +8,7 @@ interface Routes {
 const publicOnlyUrls: Routes = {
   "/": true,
   "/login": true,
-  "/sms": true,
+  "/sms-login": true,
   "/create-account": true,
   "/github/start": true,
   "/github/complete": true,
@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
     }
   } else {
     if (publicOnly) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL("/products", request.url));
     }
   }
 }
