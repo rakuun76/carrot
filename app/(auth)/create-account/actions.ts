@@ -15,7 +15,6 @@ import { z } from "zod";
 import db from "@/lib/db";
 import bcrypt from "bcrypt";
 import { redirect } from "next/navigation";
-import getSession from "@/lib/session";
 
 const checkPassword = ({
   password,
@@ -91,14 +90,11 @@ export async function createAccount(prevState: any, formData: FormData) {
   } else {
     const hashedPassword = await bcrypt.hash(result.data.password, 12);
 
-    const user = await db.user.create({
+    await db.user.create({
       data: {
         username: result.data.username,
         email: result.data.email,
         password: hashedPassword,
-      },
-      select: {
-        id: true,
       },
     });
 
